@@ -1,8 +1,9 @@
 package com.example.risha.first.model;
 
 
+import java.io.Serializable;
 
-public class Message{
+public class Message implements Serializable {
     public String idSender;
     public String idReceiver;
     public String text;

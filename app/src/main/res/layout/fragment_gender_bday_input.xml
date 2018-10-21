@@ -1,0 +1,95 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="15dp">
+
+    <TextView
+        android:id="@+id/TempText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Your Gender..."
+        android:textColor="@color/ColorHeading"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif"/>
+
+    <RadioGroup
+        android:id="@+id/RadioGender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TempText"
+        android:layout_marginLeft="-15dp"
+        android:layout_marginStart="-20dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@+id/TempText"
+        android:layout_toRightOf="@+id/TempText">
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:buttonTint="@color/colorPrimary"
+            android:text="Male"
+            android:id="@+id/RadioMale"
+            android:checked="true"/>
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:buttonTint="@color/colorPrimary"
+            android:text="Female"
+            android:id="@+id/RadioFemale" />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/colorPrimary"
+            android:text="TransGender"
+            android:id="@+id/RadioTransGender" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/BdayText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/RadioGender"
+        android:layout_marginTop="30dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textSize="15sp"
+        android:text="Date Of Birth"/>
+
+    <TextView
+        android:id="@+id/DOB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/BdayText"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:hint="07/02/1999" />
+
+    <DatePicker
+        android:id="@+id/DOBPick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/DOB"
+        android:backgroundTint="@color/colorSecondary"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner"
+        android:headerBackground="@color/colorPrimary" />
+
+    <Button
+        android:id="@+id/Next"
+        style="@style/nextbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/done"
+        android:enabled="false"/>
+
+</RelativeLayout>
+
+

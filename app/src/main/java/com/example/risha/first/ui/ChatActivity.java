@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.risha.first.model.Conversation;
 import com.example.risha.first.model.Friend;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
@@ -32,7 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.example.risha.first.R;
 import com.example.risha.first.data.SharedPreferenceHelper;
 import com.example.risha.first.data.StaticConfig;
-import com.example.risha.first.model.Consersation;
 import com.example.risha.first.model.Message;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private String roomId,rec_id="";
     private static  String rec_lang="";
     private ArrayList<CharSequence> idFriend;
-    private Consersation consersation;
+    private Conversation conversation;
     private ImageButton btnSend;
     private EditText editWriteMessage;
     private LinearLayoutManager linearLayoutManager;
@@ -72,7 +72,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         String nameFriend = intentData.getStringExtra(StaticConfig.INTENT_KEY_CHAT_FRIEND);
 
-        consersation = new Consersation();
+        conversation = new Conversation();
         btnSend = (ImageButton) findViewById(R.id.btnSend);
         btnSend.setOnClickListener(this);
 
@@ -90,7 +90,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             recyclerChat = (RecyclerView) findViewById(R.id.recyclerChat);
             recyclerChat.setLayoutManager(linearLayoutManager);
-            adapter = new ListMessageAdapter(this, consersation, bitmapAvataFriend, bitmapAvataUser);
+            adapter = new ListMessageAdapter(this, conversation, bitmapAvataFriend, bitmapAvataUser);
             FirebaseDatabase.getInstance().getReference().child("message/" + roomId).addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -102,9 +102,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         newMessage.text = (String) mapMessage.get("text");
                         newMessage.orignal_text = (String) mapMessage.get("orignal_text");
                         newMessage.timestamp = (long) mapMessage.get("timestamp");
-                        consersation.getListMessageData().add(newMessage);
+                        conversation.getListMessageData().add(newMessage);
                         adapter.notifyDataSetChanged();
-                        linearLayoutManager.scrollToPosition(consersation.getListMessageData().size() - 1);
+                        linearLayoutManager.scrollToPosition(conversation.getListMessageData().size() - 1);
                     }
                 }
 
@@ -226,14 +226,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 class ListMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
-    private Consersation consersation;
+    private Conversation conversation;
     private HashMap<String, Bitmap> bitmapAvata;
     private HashMap<String, DatabaseReference> bitmapAvataDB;
     private Bitmap bitmapAvataUser;
 
-    public ListMessageAdapter(Context context, Consersation consersation, HashMap<String, Bitmap> bitmapAvata, Bitmap bitmapAvataUser) {
+    public ListMessageAdapter(Context context, Conversation conversation, HashMap<String, Bitmap> bitmapAvata, Bitmap bitmapAvataUser) {
         this.context = context;
-        this.consersation = consersation;
+        this.conversation = conversation;
         this.bitmapAvata = bitmapAvata;
         this.bitmapAvataUser = bitmapAvataUser;
         bitmapAvataDB = new HashMap<>();
@@ -254,12 +254,12 @@ class ListMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemMessageFriendHolder) {
-            ((ItemMessageFriendHolder) holder).txtContent.setText(consersation.getListMessageData().get(position).text);
-            Bitmap currentAvata = bitmapAvata.get(consersation.getListMessageData().get(position).idSender);
+            ((ItemMessageFriendHolder) holder).txtContent.setText(conversation.getListMessageData().get(position).text);
+            Bitmap currentAvata = bitmapAvata.get(conversation.getListMessageData().get(position).idSender);
             if (currentAvata != null) {
                 ((ItemMessageFriendHolder) holder).avata.setImageBitmap(currentAvata);
             } else {
-                final String id = consersation.getListMessageData().get(position).idSender;
+                final String id = conversation.getListMessageData().get(position).idSender;
                 if(bitmapAvataDB.get(id) == null){
                     bitmapAvataDB.put(id, FirebaseDatabase.getInstance().getReference().child("user/" + id + "/avata"));
                     bitmapAvataDB.get(id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -285,7 +285,7 @@ class ListMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         } else if (holder instanceof ItemMessageUserHolder) {
-            ((ItemMessageUserHolder) holder).txtContent.setText(consersation.getListMessageData().get(position).orignal_text);
+            ((ItemMessageUserHolder) holder).txtContent.setText(conversation.getListMessageData().get(position).orignal_text);
             if (bitmapAvataUser != null) {
                 ((ItemMessageUserHolder) holder).avata.setImageBitmap(bitmapAvataUser);
             }
@@ -294,12 +294,12 @@ class ListMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return consersation.getListMessageData().get(position).idSender.equals(StaticConfig.UID) ? ChatActivity.VIEW_TYPE_USER_MESSAGE : ChatActivity.VIEW_TYPE_FRIEND_MESSAGE;
+        return conversation.getListMessageData().get(position).idSender.equals(StaticConfig.UID) ? ChatActivity.VIEW_TYPE_USER_MESSAGE : ChatActivity.VIEW_TYPE_FRIEND_MESSAGE;
     }
 
     @Override
     public int getItemCount() {
-        return consersation.getListMessageData().size();
+        return conversation.getListMessageData().size();
     }
 }
 

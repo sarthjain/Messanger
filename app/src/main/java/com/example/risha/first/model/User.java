@@ -1,14 +1,20 @@
 package com.example.risha.first.model;
 
 
+import com.example.risha.first.data.StaticConfig;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     public String name;
     public String email;
+    public String number;
     public String avata;
     public Status status;
     public Message message;
     public String Native_Language;
+    public String gender;
+    public String dob;
 
 
     public User(){
@@ -21,5 +27,6 @@ public class User {
         message.text = "";
         message.timestamp = 0;
         Native_Language = "en";
+        avata = StaticConfig.STR_DEFAULT_BASE64;
     }
 }

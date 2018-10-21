@@ -17,4 +17,8 @@
     <string name="hint_userlanguage">Enter a new user language</string>
     <string name="hint_email_reset">Enter your email</string>
     <string name="enter_group_name">Enter group name</string>
+    <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="done">Done</string>
+    <string name="namewelcome">Hi!  What\'s your name?</string>
+    <string name="hint_your_name">Your Name</string>
 </resources>

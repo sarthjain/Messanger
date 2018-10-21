@@ -1,8 +1,9 @@
 package com.example.risha.first.model;
 
 
+import java.io.Serializable;
 
-public class Status{
+public class Status implements Serializable {
     public boolean isOnline;
     public long timestamp;
 

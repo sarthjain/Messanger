@@ -1,0 +1,91 @@
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_margin="15dp">
+
+        <TextView
+            android:id="@+id/UserNameText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="40dp"
+            android:text="@string/namewelcome"
+            android:textColor="@color/ColorHeading"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/UserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/UserNameText"
+            android:layout_marginTop="15dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/userNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_your_name"
+                android:inputType="textPersonName"
+                android:maxLength="16"
+                android:maxLines="1"
+                android:textSize="18sp"
+                android:textColor="@color/ColorHeading"
+                android:fontFamily="sans-serif"
+                app:backgroundTint="@color/colorPrimary"
+                android:textCursorDrawable="@drawable/cursor_blue"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/profile_Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Profile Pic"
+            android:textColor="@color/ColorHeading"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginTop="30dp"
+            android:layout_below="@id/UserName"/>
+
+        <RelativeLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/profile_Text"
+            android:layout_centerHorizontal="true"
+            android:elevation="8dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profilePic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/user" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/semi_transparent_color" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/profilePicEdit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="30dp"
+                app:srcCompat="@drawable/venue_photo" />
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/Next"
+            style="@style/nextbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:enabled="false"
+            android:text="@string/next" />
+
+    </RelativeLayout>
+
