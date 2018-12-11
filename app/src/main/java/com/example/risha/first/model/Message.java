@@ -8,5 +8,7 @@ public class Message implements Serializable {
     public String idReceiver;
     public String text;
     public String orignal_text;
+    public String sentiment_score;
+    public String sender_name;
     public long timestamp;
 }

@@ -43,6 +43,11 @@ public final class FriendDB {
         return db.insert(FeedEntry.TABLE_NAME, null, values);
     }
 
+    public boolean deleteFriend(Friend friend){
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        return db.delete(FeedEntry.TABLE_NAME, FeedEntry.COLUMN_NAME_ID + "=?", new String[]{friend.id}) > 0;
+    }
+
 
     public void addListFriend(ListFriend listFriend){
         for(Friend friend: listFriend.getListFriend()){

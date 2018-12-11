@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(toolbar != null) {
+        if (toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle("RivChat");
+            getSupportActionBar().setTitle("MultiLingual Messenger");
         }
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initFirebase() {
-        //Khoi tao thanh phan de dang nhap, dang ky
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -87,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-        ServiceUtils.stopServiceFriendChat(getApplicationContext(), false);
+        //ServiceUtils.stopServiceFriendChat(getApplicationContext(), false);
+        ServiceUtils.startServiceFriendChat(getApplicationContext());
     }
 
     @Override
@@ -104,9 +104,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    /**
-     * Khoi tao 3 tab
-     */
     private void initTab() {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorIndivateTab));
@@ -145,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("RestrictedApi")
             @Override
             public void onPageSelected(int position) {
-                ServiceUtils.stopServiceFriendChat(MainActivity.this.getApplicationContext(), false);
+                //ServiceUtils.stopServiceFriendChat(MainActivity.this.getApplicationContext(), false);
                 if (adapter.getItem(position) instanceof FriendsFragment) {
                     floatButton.setVisibility(View.VISIBLE);
                     floatButton.setOnClickListener(((FriendsFragment) adapter.getItem(position)).onClickFloatButton.getInstance(MainActivity.this));
@@ -166,9 +163,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 //        if (requestCode == REQUEST_CODE_LOGIN && resultCode == RESULT_OK) {
 //            if (data.getStringExtra(STR_EXTRA_ACTION).equals(LoginActivity.STR_EXTRA_ACTION_LOGIN)) {
 //                authUtils.signIn(data.getStringExtra(STR_EXTRA_USERNAME), data.getStringExtra(STR_EXTRA_PASSWORD));
@@ -195,18 +193,15 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.about) {
-            Toast.makeText(this, "Rivchat version 1.0", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "MultiLingual Messenger version 1.0", Toast.LENGTH_LONG).show();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Adapter hien thi tab
-     */
+
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();

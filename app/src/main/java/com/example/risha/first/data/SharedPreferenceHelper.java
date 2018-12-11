@@ -17,7 +17,9 @@ public class SharedPreferenceHelper {
     private static String SHARE_KEY_AVATA = "avata";
     private static String SHARE_KEY_UID = "uid";
     private static String SHARE_KEY_NUMBER = "number";
-
+    private static String SHARE_KEY_LANGUAGE = "language";
+    private static String SHARE_KEY_DOB = "dob";
+    private static String SHARE_KEY_GENDER = "gender";
 
     private SharedPreferenceHelper() {}
 
@@ -36,6 +38,9 @@ public class SharedPreferenceHelper {
         editor.putString(SHARE_KEY_AVATA, user.avata);
         editor.putString(SHARE_KEY_UID, StaticConfig.UID);
         editor.putString(SHARE_KEY_NUMBER,user.number);
+        editor.putString(SHARE_KEY_LANGUAGE,user.Native_Language);
+        editor.putString(SHARE_KEY_DOB,user.dob);
+        editor.putString(SHARE_KEY_GENDER,user.gender);
         editor.apply();
     }
 
@@ -44,12 +49,23 @@ public class SharedPreferenceHelper {
         String email = preferences.getString(SHARE_KEY_EMAIL, "");
         String avatar = preferences.getString(SHARE_KEY_AVATA, "default");
         String number = preferences.getString(SHARE_KEY_NUMBER, "");
+        String language = preferences.getString(SHARE_KEY_LANGUAGE,"en");
+        String dob = preferences.getString(SHARE_KEY_DOB,"");
+        String gender = preferences.getString(SHARE_KEY_GENDER,"");
         User user = new User();
         user.name = userName;
         user.email = email;
         user.avata = avatar;
         user.number = number;
+        user.Native_Language = language;
+        user.dob = dob;
+        user.gender = gender;
         return user;
+    }
+
+    public void clearUserInfo(){
+        editor.clear();
+        editor.apply();
     }
 
     public String getUID(){

@@ -11,10 +11,8 @@ public class StaticConfig {
     public static String STR_EXTRA_PASSWORD = "password";
     public static String STR_DEFAULT_BASE64 = "default";
     public static String UID = "";
-    public static final String API_KEY = "AIzaSyAl4m9HhGPfVTRZlpAwJZB7N8b-jKNIfOg";
+    public static final String API_KEY = "Your key";
     public static final String Language = "hi";
-    //TODO only use this UID for debug mode
-//    public static String UID = "6kU0SbJPF5QJKZTfvW1BqKolrx22";
     public static String INTENT_KEY_CHAT_FRIEND = "friendname";
     public static String INTENT_KEY_CHAT_AVATA = "friendavata";
     public static String INTENT_KEY_CHAT_ID = "friendid";

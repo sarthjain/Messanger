@@ -1,14 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ContactsFragment">
+    tools:context=".ui.ContactsFragment"
+    android:background="#FFDE03">
 
-    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/add_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Friend"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:padding="10dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/enterNumber"
+        android:layout_below="@+id/add_friend"
+        android:hint="Enter Number (Including Country Code)"
+        android:padding="10dp"
+        android:layout_alignEnd="@id/selectContact"/>
+
+    <ImageButton
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/ic_send"
+        android:background="#00000000"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:id="@+id/selectContact"
+        android:layout_below="@id/add_friend"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@id/enterNumber"
+        android:layout_alignTop="@id/enterNumber"/>
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/enterNumber"
+        android:id="@+id/ContactListText"
+        android:text="OR\nSelect from Contact List"
+        android:padding="10dp"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textAlignment="center"
+        android:background="@color/colorSecondary"
+        android:textColor="@color/ColorHeading"/>
 
-</FrameLayout>
+
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_View"
+        android:queryHint="Search Contact by name"
+        android:layout_below="@+id/ContactListText"
+        android:layout_marginTop="5dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_View"
+        android:layout_marginTop="5dp"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@android:color/darker_gray"
+        android:scrollbarSize="10dp" />
+
+</RelativeLayout>

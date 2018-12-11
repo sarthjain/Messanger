@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,8 +29,11 @@ import com.example.risha.first.BuildConfig;
 import com.example.risha.first.R;
 import com.example.risha.first.ui.PhotoDialog;
 import com.example.risha.first.util.ImagePreview;
+import com.example.risha.first.util.ImageUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -52,6 +57,7 @@ public class NamePicInputFragment extends Fragment {
     private static final int CAMERA = 1;
     private static final int PREVIEW = 390;
     private Uri uri;
+    private String imageBase64;
 
     public NamePicInputFragment() {
         // Required empty public constructor
@@ -93,7 +99,7 @@ public class NamePicInputFragment extends Fragment {
             public void onClick(View view) {
                 listener.getUserDetailsModel().name=usernameEditText.getText().toString().trim();
                 if(uri!=null)
-                    listener.getUserDetailsModel().avata=uri.toString();
+                    listener.getUserDetailsModel().avata=imageBase64;
                 listener.moveToNext();
             }
         });
@@ -196,15 +202,35 @@ public class NamePicInputFragment extends Fragment {
                 case PREVIEW:
                     Uri resultUri = Uri.parse(data.getStringExtra("Uri"));
                         uri = resultUri;
-                        profilePicture.setImageURI(resultUri);
-                        Glide.with(this)
-                                .fromUri()
-                                .load(Uri.parse(resultUri.toString()))
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .placeholder(R.drawable.user)
-                                .centerCrop()
-                                .dontAnimate()
-                                .into(profilePicture);
+
+
+                    try {
+                        InputStream inputStream = context.getContentResolver().openInputStream(resultUri);
+
+                        Bitmap imgBitmap = BitmapFactory.decodeStream(inputStream);
+                        imgBitmap = ImageUtils.cropToSquare(imgBitmap);
+                        InputStream is = ImageUtils.convertBitmapToInputStream(imgBitmap);
+                        final Bitmap liteImage = ImageUtils.makeImageLite(is,
+                                imgBitmap.getWidth(), imgBitmap.getHeight(),
+                                ImageUtils.AVATAR_WIDTH, ImageUtils.AVATAR_HEIGHT);
+
+                        imageBase64 = ImageUtils.encodeBase64(liteImage);
+                        profilePicture.setImageDrawable(ImageUtils.roundedImage(context, liteImage));
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+
+//                        profilePicture.setImageURI(resultUri);
+//                        Glide.with(this)
+//                                .fromUri()
+//                                .load(Uri.parse(resultUri.toString()))
+//                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                                .placeholder(R.drawable.user)
+//                                .centerCrop()
+//                                .dontAnimate()
+//                                .into(profilePicture);
                     break;
                 default:
                     super.onActivityResult(requestCode, resultCode, data);

@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -26,9 +28,12 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.example.risha.first.R;
 import com.example.risha.first.data.FriendDB;
@@ -42,6 +47,7 @@ import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 
 public class GroupFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
@@ -94,10 +100,24 @@ public class GroupFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 .setTopColorRes(R.color.colorAccent);
 
         if(listGroup.size() == 0){
-            //Ket noi server hien thi group
             mSwipeRefreshLayout.setRefreshing(true);
             getListGroup();
         }
+
+        FirebaseDatabase.getInstance().getReference().child("user/"+StaticConfig.UID+"/group").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    if(dataSnapshot.getChildrenCount()!=listGroup.size())
+                        onRefresh();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         return layout;
     }
 
@@ -135,6 +155,7 @@ public class GroupFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             listGroup.clear();
             ListGroupsAdapter.listFriend = null;
             GroupDB.getInstance(getContext()).dropDB();
+            adapter.notifyDataSetChanged();
             getListGroup();
         }
     }
@@ -293,7 +314,8 @@ public class GroupFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                                     .setMessage("Error occurred during leaving group")
                                     .show();
                         } else {
-                            String memberIndex = "";
+                            String memberIndex=null;
+                            //String memberIndex = ((HashMap<String,String>)dataSnapshot.getValue()).keySet().iterator().next();
                             ArrayList<String> result = ((ArrayList<String>)dataSnapshot.getValue());
                             for(int i = 0; i < result.size(); i++){
                                 if(result.get(i) != null){
@@ -316,7 +338,7 @@ public class GroupFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                                             new LovelyInfoDialog(getContext())
                                                     .setTopColorRes(R.color.colorAccent)
                                                     .setTitle("Success")
-                                                    .setMessage("Group leaving successfully")
+                                                    .setMessage("Group left successfully")
                                                     .show();
                                         }
                                     })
@@ -358,7 +380,7 @@ public class GroupFragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
         @Override
         public void onClick(View view) {
-            startActivity(new Intent(getContext(), AddGroupActivity.class));
+            startActivityForResult(new Intent(getContext(), AddGroupActivity.class),REQUEST_EDIT_GROUP );
         }
     }
 }
@@ -367,10 +389,16 @@ class ListGroupsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Group> listGroup;
     public static ListFriend listFriend = null;
     private Context context;
+    public static Map<String, Query> mapQuery;
+    public static Map<String, ChildEventListener> mapChildListener;
+    public static Map<String, Boolean> mapMark;
 
-    public ListGroupsAdapter(Context context,ArrayList<Group> listGroup){
+    public ListGroupsAdapter(Context context, ArrayList<Group> listGroup) {
         this.context = context;
         this.listGroup = listGroup;
+        mapQuery = new HashMap<>();
+        mapChildListener = new HashMap<>();
+        mapMark = new HashMap<>();
     }
 
     @Override
@@ -381,8 +409,10 @@ class ListGroupsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        final String id = listGroup.get(position).id;
         final String groupName = listGroup.get(position).groupInfo.get("name");
-        if(groupName != null && groupName.length() > 0) {
+        final CardView card = ((ItemGroupViewHolder)holder).cardView;
+        if (groupName != null && groupName.length() > 0) {
             ((ItemGroupViewHolder) holder).txtGroupName.setText(groupName);
             ((ItemGroupViewHolder) holder).iconGroup.setText((groupName.charAt(0) + "").toUpperCase());
         }
@@ -393,26 +423,30 @@ class ListGroupsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 view.getParent().showContextMenuForChild(view);
             }
         });
-        ((RelativeLayout)((ItemGroupViewHolder) holder).txtGroupName.getParent()).setOnClickListener(new View.OnClickListener() {
+        ((RelativeLayout) ((ItemGroupViewHolder) holder).txtGroupName.getParent()).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(listFriend == null){
+                if (listFriend == null) {
                     listFriend = FriendDB.getInstance(context).getListFriend();
                 }
+                card.setBackgroundColor(context.getResources().getColor(R.color.colorCardView));
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra(StaticConfig.INTENT_KEY_CHAT_FRIEND, groupName);
+                intent.putExtra("Sender", "G");
                 ArrayList<CharSequence> idFriend = new ArrayList<>();
                 ChatActivity.bitmapAvataFriend = new HashMap<>();
-                for(String id : listGroup.get(position).member) {
-                    idFriend.add(id);
-                    String avata = listFriend.getAvataById(id);
-                    if(!avata.equals(StaticConfig.STR_DEFAULT_BASE64)) {
-                        byte[] decodedString = Base64.decode(avata, Base64.DEFAULT);
-                        ChatActivity.bitmapAvataFriend.put(id, BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length));
-                    }else if(avata.equals(StaticConfig.STR_DEFAULT_BASE64)) {
-                        ChatActivity.bitmapAvataFriend.put(id, BitmapFactory.decodeResource(context.getResources(), R.drawable.default_avata));
-                    }else {
-                        ChatActivity.bitmapAvataFriend.put(id, null);
+                for (String id : listGroup.get(position).member) {
+                    if (id != null) {
+                        idFriend.add(id);
+                        String avata = listFriend.getAvataById(id);
+                        if (!avata.equals(StaticConfig.STR_DEFAULT_BASE64)) {
+                            byte[] decodedString = Base64.decode(avata, Base64.DEFAULT);
+                            ChatActivity.bitmapAvataFriend.put(id, BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length));
+                        } else if (avata.equals(StaticConfig.STR_DEFAULT_BASE64)) {
+                            ChatActivity.bitmapAvataFriend.put(id, BitmapFactory.decodeResource(context.getResources(), R.drawable.default_avata));
+                        } else {
+                            ChatActivity.bitmapAvataFriend.put(id, null);
+                        }
                     }
                 }
                 intent.putCharSequenceArrayListExtra(StaticConfig.INTENT_KEY_CHAT_ID, idFriend);
@@ -420,7 +454,43 @@ class ListGroupsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 context.startActivity(intent);
             }
         });
+        if (mapQuery.get(id) == null && mapChildListener.get(id) == null) {
+            mapQuery.put(id, FirebaseDatabase.getInstance().getReference().child("message/" + id).limitToLast(1));
+            mapChildListener.put(id, new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    if (mapMark.get(id) != null && mapMark.get(id)) {
+                        if(!((HashMap)dataSnapshot.getValue()).get("idSender").equals(StaticConfig.UID))
+                            card.setBackgroundColor(context.getResources().getColor(R.color.colorSecondary));
+                    } else {
+                        mapMark.put(id, true);
+                    }
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        mapQuery.get(id).addChildEventListener(mapChildListener.get(id));
     }
+
 
     @Override
     public int getItemCount() {
@@ -431,12 +501,14 @@ class ListGroupsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
     public TextView iconGroup, txtGroupName;
     public ImageButton btnMore;
+    public CardView cardView;
     public ItemGroupViewHolder(View itemView) {
         super(itemView);
         itemView.setOnCreateContextMenuListener(this);
         iconGroup = (TextView) itemView.findViewById(R.id.icon_group);
         txtGroupName = (TextView) itemView.findViewById(R.id.txtName);
         btnMore = (ImageButton) itemView.findViewById(R.id.btnMoreAction);
+        cardView = (CardView) itemView.findViewById(R.id.cardView);
     }
 
     @Override

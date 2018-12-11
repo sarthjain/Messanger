@@ -12,4 +12,9 @@
     <color name="grey_800">#212121</color>
     <color name="ColorHeading">#101010</color>
     <color name="colorSecondary">#ffa600</color>
+
+    <color name="score_positive">#43A047</color>
+    <color name="score_neutral">#757575</color>
+    <color name="score_negative">#E53935</color>
+    <color name="magnitude">#0288D1</color>
 </resources>

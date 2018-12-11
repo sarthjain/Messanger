@@ -1,5 +1,6 @@
 package com.example.risha.first.service;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -77,7 +79,6 @@ public class FriendChatService extends Service {
         updateOnline.start();
 
         if (listFriend.getListFriend().size() > 0 || listGroup.size() > 0) {
-            //Dang ky lang nghe cac room tai day
             for (final Friend friend : listFriend.getListFriend()) {
                 if (!listKey.contains(friend.idRoom)) {
                     mapQuery.put(friend.idRoom, FirebaseDatabase.getInstance().getReference().child("message/" + friend.idRoom).limitToLast(1));
@@ -94,8 +95,8 @@ public class FriendChatService extends Service {
                                         mapBitmap.put(friend.idRoom, BitmapFactory.decodeResource(getResources(), R.drawable.default_avata));
                                     }
                                 }
-                                createNotify(friend.name, (String) ((HashMap) dataSnapshot.getValue()).get("text"), friend.idRoom.hashCode(), mapBitmap.get(friend.idRoom), false);
-
+                                if(!((HashMap)dataSnapshot.getValue()).get("idSender").equals(StaticConfig.UID))
+                                    createNotify(friend.name, (String) ((HashMap) dataSnapshot.getValue()).get("text"), friend.idRoom.hashCode(), mapBitmap.get(friend.idRoom), false);
                             } else {
                                 mapMark.put(friend.idRoom, true);
                             }
@@ -136,7 +137,8 @@ public class FriendChatService extends Service {
                                 if (mapBitmap.get(group.id) == null) {
                                     mapBitmap.put(group.id, BitmapFactory.decodeResource(getResources(), R.drawable.ic_notify_group));
                                 }
-                                createNotify(group.groupInfo.get("name"), (String) ((HashMap) dataSnapshot.getValue()).get("text"), group.id.hashCode(), mapBitmap.get(group.id) , true);
+                                if(!((HashMap)dataSnapshot.getValue()).get("idSender").equals(StaticConfig.UID))
+                                    createNotify(group.groupInfo.get("name"), (String) ((HashMap) dataSnapshot.getValue()).get("text"), group.id.hashCode(), mapBitmap.get(group.id) , true);
                             } else {
                                 mapMark.put(group.id, true);
                             }
@@ -179,8 +181,9 @@ public class FriendChatService extends Service {
     public void createNotify(String name, String content, int id, Bitmap icon, boolean isGroup) {
         Intent activityIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, activityIntent, PendingIntent.FLAG_ONE_SHOT);
+        String CHANNEL_ID = "my_channel_01";// The id of the channel.
         NotificationCompat.Builder notificationBuilder = new
-                NotificationCompat.Builder(this)
+                NotificationCompat.Builder(this,CHANNEL_ID)
                 .setLargeIcon(icon)
                 .setContentTitle(name)
                 .setContentText(content)
@@ -194,8 +197,13 @@ public class FriendChatService extends Service {
             notificationBuilder.setSmallIcon(R.drawable.ic_tab_person);
         }
         NotificationManager notificationManager =
-                (NotificationManager) this.getSystemService(
-                        Context.NOTIFICATION_SERVICE);
+                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence channel_name = getString(R.string.channel_name);// The user-visible name of the channel.
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, channel_name, importance);
+            notificationManager.createNotificationChannel(mChannel);
+        }
         notificationManager.cancel(id);
         notificationManager.notify(id,
                 notificationBuilder.build());
@@ -217,6 +225,7 @@ public class FriendChatService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         for (String id : listKey) {
             mapQuery.get(id).removeEventListener(mapChildEventListenerMap.get(id));
         }

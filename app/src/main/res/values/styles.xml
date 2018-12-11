@@ -14,6 +14,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="SplashScreen" parent="AppTheme.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg</item>
+    </style>
+
     <style name="MyThemeNoActionbar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -38,8 +42,7 @@
         <item name="colorPrimary">#03A9F4</item>
         <item name="colorPrimaryDark">#FFCC00</item>
         <item name="colorAccent">#4fa881</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@drawable/bg</item>
     </style>
 
     <style name="TranslucentBackground" parent="Theme.AppCompat.Light.NoActionBar">
@@ -48,6 +51,13 @@
         <item name="colorPrimaryDark">#FFCC00</item>
         <item name="colorAccent">#4fa881</item>
         <item name="android:windowBackground">@drawable/bg</item>
+        <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
+    </style>
+
+    <style name="OtpWidget.OtpView" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@null</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:maxLines">1</item>
     </style>
 
     <style name="nextbutton">

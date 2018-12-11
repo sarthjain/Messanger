@@ -2,8 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/colorIndivateTab">
+    android:background="@color/colorIndivateTab"
+    android:id="@+id/rootView">
 
 
     <ImageButton
@@ -32,22 +34,30 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <EditText
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:src="@drawable/smiley"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/emojiButton" />
+
+    <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
         android:id="@+id/editWriteMessage"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="10dp"
         android:layout_toStartOf="@id/btnSend"
         android:background="@drawable/edittext_boder"
+        android:layout_toEndOf="@id/emojiButton"
         android:drawablePadding="20dp"
         android:inputType="textLongMessage"
         android:maxLines="1"
-        android:paddingLeft="7dp"
-        android:paddingRight="7dp"
         android:textColorHint="#aeafaf"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:padding="10dp"
+        app:emojiconSize="20sp"/>
 
 </RelativeLayout>
